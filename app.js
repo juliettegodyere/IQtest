@@ -35,6 +35,7 @@ app.get('/create', function(req, res) {
 
 
 app.post('/create', function(req, res) {
+    var category = req.body.category;
     var question = req.body.question;
     var answer = req.body.answer;
     var image = req.body.image;
@@ -43,6 +44,7 @@ app.post('/create', function(req, res) {
     var date = new Date();
 
     var data = new Data();
+    data.category = category;
     data.question = question;
     data.answer = answer;
     data.image = image;
@@ -79,6 +81,7 @@ app.get('/', function(req, res) {
                 if (item.option && item.option.trim().length){
                     var newGuy = {
                         "_id": item._id,
+                        "category": item.category,
                         "explanation": item.explanation,
                         "image": item.image,
                         "answer": item.answer,

@@ -1,9 +1,10 @@
 // Load required packages
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/IQtests');
+mongoose.connect('mongodb://localhost:27017/IQTest');
 
 // Define our beer schema
 var DataSchema   = new mongoose.Schema({
+	category: String,
   question: String,
   answer: String,
   image: String,
