@@ -98,70 +98,66 @@ app.get('/', function(req, res) {
         _id: -1
     });
 });
+var fields = ['question', 'answer', 'image', 'option', 'explanation', 'date'];
+app.get('/export', function(res,req){        
+    // res.sendfile('file imported');
+    var sortedsArray = [];
+    Data.find({}, function(err, data){  
+        //console.log(data);
+        sortedsArray = data
+        console.log(sortedsArray);
 
-        var fields = ['question', 'answer', 'image', 'option', 'explanation', 'date'];
-app.get('/file', function(res,req){
-    Data.find({}, function(err, data){
-        var sortedArray = [];
-            data.forEach(function(item){
-                var newGuy = {
-                    "_id": item._id,
-                    "explanation": item.explanation,
-                    "image": item.image,
-                    "answer": item.answer,
-                    "question": item.question,
-                    "__v": item.__v,
-                    "date": item.date,
-                    "options": item.option ? item.option.split('|') : ''
-                }
-                sortedArray.push(newGuy);
-            });
-            json2csv({
-                    data: sortedArray,
-                    fields: fields
-                }, function(err, csv) {
-                    if (err) console.log(err);
-                    fs.writeFile('file.csv', csv, function(err) {
-                        if (err) throw err;
-                        console.log('file saved');
-                    });
-            });
-
-            var converter = new Converter({});
-            converter.fromFile("./file.csv", function(err,items){
+        json2csv({
+                data: sortedsArray,
+                fields: fields
+            }, function(err, csv) {
                 if (err) console.log(err);
-                        //console.log(result);
-                        var numberOfSavedRecords = 0;
-                        var numberOfErrorRecords = 0;
-                        console.log(items.length);
-                        items.forEach(function(item){
-                            //console.log(item);
-                            var current = item;
-                            var data = new Data();
-                            data.question = current.question;
-                            data.answer = current.answer;
-                            data.image = current.image;
-                            data.option = current.option;
-                            data.explanation = current.explanation;
-                            // data.date_created = new Date(current.date_created);
-                            data.date = new Date();
+                fs.writeFile('file.csv', csv, function(err) {
+                    if (err) throw err;
+                    console.log('file saved');
+                });
+        });
+    })
+    
 
-                            data.save(function(err, user) {
-                                if (err) {
-                                    console.log(err);
-                                    numberOfErrorRecords++;
-                                } else {
-                                    numberOfSavedRecords++;  
-                                }
-                            });
-                        })
-                        console.log('Report: '+numberOfSavedRecords + 'records completed and ' + numberOfErrorRecords + ' records failed');
-            })
-            // console.log(sortedArray);
-            
 
-    });
+    
 });
+
+app.get('/import', function(res,req){
+    var converter = new Converter({});
+    converter.fromFile("./file.csv", function(err,items){
+        if (err) console.log(err);
+            //console.log(result);
+            var numberOfSavedRecords = 0;
+            var numberOfErrorRecords = 0;
+            console.log(items.length);
+            items.forEach(function(item){
+                //console.log(item);
+                var current = item;
+                var data = new Data();
+                data.question = current.question;
+                data.answer = current.answer;
+                data.image = current.image;
+                data.option = current.option;
+                data.explanation = current.explanation;
+                // data.date_created = new Date(current.date_created);
+                data.date = new Date();
+
+                data.save(function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        numberOfErrorRecords++;
+                    } else {
+                        numberOfSavedRecords++;  
+                    }
+                });
+            })
+            console.log('Report: '+numberOfSavedRecords + 'records completed and ' + numberOfErrorRecords + ' records failed');
+    })
+    // console.log(sortedArray);
+    
+})
 app.listen(3001, function() {
     console.log('listening on *:3001');
 });
