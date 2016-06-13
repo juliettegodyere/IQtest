@@ -66,7 +66,6 @@ app.post('/create', function(req, res) {
 });
 
 app.get('/', function(req, res) {
-    var fields = ['question', 'answer', 'image', 'option', 'explanation', 'date'];
     Data.find({}, function(err, users) {
         if (err) {
             console.log(err);
@@ -91,6 +90,31 @@ app.get('/', function(req, res) {
             })
             res.json({
                 users: sortedArray
+            });
+            
+            
+        }
+    }).sort({
+        _id: -1
+    });
+});
+
+        var fields = ['question', 'answer', 'image', 'option', 'explanation', 'date'];
+app.get('/file', function(res,req){
+    Data.find({}, function(err, data){
+        var sortedArray = [];
+            data.forEach(function(item){
+                var newGuy = {
+                    "_id": item._id,
+                    "explanation": item.explanation,
+                    "image": item.image,
+                    "answer": item.answer,
+                    "question": item.question,
+                    "__v": item.__v,
+                    "date": item.date,
+                    "options": item.option ? item.option.split('|') : ''
+                }
+                sortedArray.push(newGuy);
             });
             json2csv({
                     data: sortedArray,
@@ -135,14 +159,10 @@ app.get('/', function(req, res) {
             })
             // console.log(sortedArray);
             
-        }
-    }).sort({
-        _id: -1
+
     });
 });
-
-
-app.listen(1337, function() {
-    console.log('listening on *:1337');
+app.listen(3001, function() {
+    console.log('listening on *:3001');
 });
 module.exports = app;
