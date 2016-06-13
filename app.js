@@ -72,21 +72,23 @@ app.get('/', function(req, res) {
             return res.status(500).send();
         } else {
 
-            // console.log(users);
+             console.log(users);
             // Prepare an sorted array
             var sortedArray = [];
             users.forEach(function(item){
-                var newGuy = {
-                    "_id": item._id,
-                    "explanation": item.explanation,
-                    "image": item.image,
-                    "answer": item.answer,
-                    "question": item.question,
-                    "__v": item.__v,
-                    "date": item.date,
-                    "options": item.option ? item.option.split(',') : ''
+                if (item.option && item.option.trim().length){
+                    var newGuy = {
+                        "_id": item._id,
+                        "explanation": item.explanation,
+                        "image": item.image,
+                        "answer": item.answer,
+                        "question": item.question,
+                        "__v": item.__v,
+                        "date": item.date,
+                        "options": item.option ? item.option.split('|') : ''
+                    }
+                    sortedArray.push(newGuy);   
                 }
-                sortedArray.push(newGuy);
             })
             res.json({
                 users: sortedArray
